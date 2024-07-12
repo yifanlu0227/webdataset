@@ -246,6 +246,7 @@ def handle_extension(extensions, f):
 ################################################################
 
 imagespecs = {
+    "npraw": ("numpy", None, None),
     "l8": ("numpy", "uint8", "l"),
     "rgb8": ("numpy", "uint8", "rgb"),
     "rgba8": ("numpy", "uint8", "rgba"),
@@ -273,6 +274,7 @@ class ImageHandler:
     to numpy/torch/pi, decoded to uint8/float, and decoded
     to l/rgb/rgba:
 
+    - npraw: numpy None None
     - l8: numpy uint8 l
     - rgb8: numpy uint8 rgb
     - rgba8: numpy uint8 rgba
@@ -300,7 +302,8 @@ class ImageHandler:
         :param extensions: list of extensions the image handler is invoked for
         """
         if imagespec not in list(imagespecs.keys()):
-            raise ValueError("Unknown imagespec: %s" % imagespec)
+            raise ValueError("Unknown imagespec: %s. \n\
+                              If it is `npraw` (numpy raw), you shoud pip install git+https://github.com/yifanlu0227/webdataset.git rather than the official one" % imagespec)
         self.imagespec = imagespec.lower()
         self.extensions = extensions
 
@@ -320,7 +323,8 @@ class ImageHandler:
         with io.BytesIO(data) as stream:
             img = PIL.Image.open(stream)
             img.load()
-            img = img.convert(mode.upper())
+            if mode is not None:
+                img = img.convert(mode.upper())
 
         if atype == "pil":
             if mode == "l":
@@ -341,7 +345,7 @@ class ImageHandler:
             result = result.astype(np.float32) / 255.0
 
         assert result.ndim in [2, 3], result.shape
-        assert mode in ["l", "rgb", "rgba"], mode
+        assert mode in ["l", "rgb", "rgba", None], mode
 
         if mode == "l":
             if result.ndim == 3:
