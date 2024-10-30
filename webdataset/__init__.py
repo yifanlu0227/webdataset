@@ -80,9 +80,9 @@ from .writer import ShardWriter, TarWriter, numpy_dumps, torch_dumps
 def get_sample(url, decoder=imagehandler('npraw')):
     """Get a sample from a URL with basic auto-decoding."""
     if decoder is None:
-        dataset = WebDataset(url).decode()
+        dataset = WebDataset(url, nodesplitter=non_empty).decode()
     else:
-        dataset = WebDataset(url).decode(decoder)
+        dataset = WebDataset(url, nodesplitter=non_empty).decode(decoder)
 
     return next(iter(dataset))
 
