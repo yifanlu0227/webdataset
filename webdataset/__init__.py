@@ -77,8 +77,13 @@ from .tariterators import tarfile_samples, tarfile_to_samples
 from .utils import PipelineStage, repeatedly
 from .writer import ShardWriter, TarWriter, numpy_dumps, torch_dumps
 
+from pathlib import Path
+
 def get_sample(url, decoder=imagehandler('npraw')):
     """Get a sample from a URL with basic auto-decoding."""
+    if isinstance(url, Path):
+        url = url.as_posix()
+        
     if decoder is None:
         dataset = WebDataset(url, nodesplitter=non_empty).decode()
     else:
